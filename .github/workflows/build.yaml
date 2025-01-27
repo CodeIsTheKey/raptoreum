@@ -346,7 +346,8 @@ jobs:
           brew install automake libtool pkg-config librsvg libnatpmp python
           python3 -m venv venv
           source venv/bin/activate
-          python3 -m pip install ds_store mac_alias setuptools
+          pip3 install -U pip ds_store mac_alias
+          pip3 install setuptools
 
       - name: Build Depends
         run: |
