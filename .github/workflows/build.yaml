@@ -343,11 +343,10 @@ jobs:
 
       - name: Install Required Packages
         run: |
-          brew install automake libtool pkg-config librsvg libnatpmp python
+          brew install automake libtool pkg-config librsvg libnatpmp python python-setuptools
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -U pip ds_store mac_alias
-          pip3 install setuptools
 
       - name: Build Depends
         run: |
