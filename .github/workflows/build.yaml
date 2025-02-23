@@ -202,6 +202,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      - uses: actions/cache@v4
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -209,6 +211,17 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+
+
+      - name: Set ccache directory
+        run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
+
+      - name: Restore ccache cache
+        id: ccache-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job_id }}--ccache
 
       - name: Build Depends
         run: |
@@ -297,6 +310,13 @@ jobs:
         with:
           name: ${{ env.COIN_NAME }}-ubuntu22-test-${{ needs.get-version.outputs.version }}
           path: ${{ env.TEST_DIR }}
+
+      - name: Save ccache cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job_id }}--ccache
+
 
   test-ubuntu22:
     name: Ubuntu 22 Tests
