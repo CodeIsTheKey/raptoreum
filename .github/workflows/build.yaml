@@ -219,7 +219,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job_id }}--ccache
+          key: ${{ github.job }}--ccache
 
       - name: Build Depends
         run: |
@@ -313,7 +313,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job_id }}--ccache
+          key: ${{ github.job }}--ccache
 
 
   test-ubuntu22:
