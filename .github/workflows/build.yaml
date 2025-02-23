@@ -208,7 +208,7 @@ jobs:
       - name: Install Required Packages
         run: |
           sudo apt-get update -y
-          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake ccache -y
 
 
       - name: Set ccache directory
