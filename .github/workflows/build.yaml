@@ -74,6 +74,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+
       - name: Build Depends
         run: |
           echo "building with $(nproc) threads"
@@ -220,8 +221,6 @@ jobs:
         run: |
           ./autogen.sh
           ./configure --prefix=`pwd`/depends/x86_64-pc-linux-gnu
-        # TODO: @Jami - this line was from malbit, I think we may not need it but could you help confirm?
-        # CONFIG_SITE=$PWD/depends/x86_64-pc-linux-gnu/share/config.site ./configure
 
       - name: Build Binaries
         run: |
@@ -343,10 +342,10 @@ jobs:
 
       - name: Install Required Packages
         run: |
-          brew install automake libtool pkg-config librsvg libnatpmp python python-setuptools
+          brew install automake librsvg libnatpmp python-setuptools
           python3 -m venv venv
           source venv/bin/activate
-          pip3 install -U pip ds_store mac_alias
+          pip3 install -U pip ds_store mac_alias setuptools
 
       - name: Build Depends
         run: |
@@ -473,7 +472,7 @@ jobs:
 
       - name: Install Required Packages
         run: |
-          brew install automake libtool pkg-config librsvg libnatpmp python python-setuptools
+          brew install automake libtool librsvg libnatpmp python-setuptools
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -U pip ds_store mac_alias
@@ -877,7 +876,6 @@ jobs:
           ./autogen.sh
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
           ./configure --prefix=`pwd`/depends/x86_64-w64-mingw32
-        #  CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure
 
       - name: Build Binaries
         run: |
