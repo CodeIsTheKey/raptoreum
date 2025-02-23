@@ -1,4 +1,7 @@
 name: Ubuntu 22 cache test
+on:
+  workflow_dispatch:
+
 env:
   COIN_NAME: raptoreum
   BUILD_DIR: raptoreum-build
