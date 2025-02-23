@@ -333,9 +333,9 @@ jobs:
           report_paths: "unit_test_results.xml"
 
   build-macos:
-    name: macOS 15 Build
+    name: macOS 15 x86 Build
     needs: get-version
-    runs-on: macos-15
+    runs-on: macos-15-large
 
     steps:
       - name: Checkout
