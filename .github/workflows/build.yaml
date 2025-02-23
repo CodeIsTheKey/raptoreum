@@ -183,11 +183,11 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ env.COIN_NAME }}-ubuntu20-test-${{ needs.get-version.outputs.version }}
+          name: ${{ env.COIN_NAME }}-ubuntu20-test-results-${{ needs.get-version.outputs.version }}
           path: unit_test_results.xml
 
       - name: Publish Unit Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
           check_name: "Ubuntu 20"
@@ -320,11 +320,11 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ env.COIN_NAME }}-ubuntu22-test-${{ needs.get-version.outputs.version }}
+          name: ${{ env.COIN_NAME }}-ubuntu22-test-results-${{ needs.get-version.outputs.version }}
           path: unit_test_results.xml
 
       - name: Publish Unit Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
           check_name: "Ubuntu 22"
@@ -333,9 +333,9 @@ jobs:
           report_paths: "unit_test_results.xml"
 
   build-macos:
-    name: macOS 15 x86 Build
+    name: macOS 13 x86 Build
     needs: get-version
-    runs-on: macos-15-large
+    runs-on: macos-13
 
     steps:
       - name: Checkout
@@ -432,7 +432,7 @@ jobs:
   test-macos:
     name: macOS Tests
     needs: [get-version, build-macos]
-    runs-on: macos-15
+    runs-on: macos-13
 
     steps:
       - name: Download Artifacts
@@ -450,14 +450,14 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ env.COIN_NAME }}-macos-test-${{ needs.get-version.outputs.version }}
+          name: ${{ env.COIN_NAME }}-macos-test-results-${{ needs.get-version.outputs.version }}
           path: unit_test_results.xml
 
       - name: Publish Unit Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          check_name: "macOS 15"
+          check_name: "macOS 13"
           detailed_summary: ${{ steps.Tests.conclusion == 'failure'}}
           include_passed: false
           report_paths: "unit_test_results.xml"
@@ -578,11 +578,11 @@ jobs:
   #       uses: actions/upload-artifact@v4
   #       if: always()
   #       with:
-  #         name: ${{ env.COIN_NAME }}-arm32-test-${{ needs.get-version.outputs.version }}
+  #         name: ${{ env.COIN_NAME }}-arm32-test-results-${{ needs.get-version.outputs.version }}
   #         path: unit_test_results.xml
 
   #     - name: Publish Unit Test Report
-  #       uses: mikepenz/action-junit-report@v3
+  #       uses: mikepenz/action-junit-report@v5
   #       if: always()
   #       with:
   #         check_name: "ARM 32-bit"
@@ -705,11 +705,11 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ env.COIN_NAME }}-arm64-test-${{ needs.get-version.outputs.version }}
+          name: ${{ env.COIN_NAME }}-arm64-test-results-${{ needs.get-version.outputs.version }}
           path: unit_test_results.xml
 
       - name: Publish Unit Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
           check_name: "ARM 64-bit"
@@ -833,7 +833,7 @@ jobs:
           pwd
           dir
 
-      - name: Run Unit Tests B
+      - name: Run Unit Tests
         id: Tests
         run: |
           pwd
@@ -844,7 +844,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ env.COIN_NAME }}-win-test-${{ needs.get-version.outputs.version }}
+          name: ${{ env.COIN_NAME }}-win-test-results${{ needs.get-version.outputs.version }}
           path: unit_test_results.xml
 
       - name: Publish Unit Test Report
