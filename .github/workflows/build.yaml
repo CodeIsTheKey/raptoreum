@@ -73,7 +73,17 @@ jobs:
       - name: Install Required Packages
         run: |
           sudo apt-get update -y
-          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake ccache -y
+
+      - name: Set ccache directory
+        run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
+
+      - name: Restore ccache cache
+        id: ccache-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
 
       - name: Build Depends
         run: |
@@ -163,6 +173,12 @@ jobs:
           name: ${{ env.COIN_NAME }}-ubuntu20-test-${{ needs.get-version.outputs.version }}
           path: ${{ env.TEST_DIR }}
 
+      - name: Save ccache cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
+
   test-ubuntu20:
     name: Ubuntu 20 Tests
     needs: [get-version, build-ubuntu20]
@@ -219,7 +235,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job }}--ccache
+          key: ${{ github.job }}-ccache
 
       - name: Build Depends
         run: |
@@ -313,8 +329,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job }}--ccache
-
+          key: ${{ github.job }}-ccache
 
   test-ubuntu22:
     name: Ubuntu 22 Tests
@@ -367,9 +382,9 @@ jobs:
 
       - name: Build Depends
         run: |
-          echo "building with $(nproc) threads"
+          echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(nproc) HOST=x86_64-apple-darwin
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin
 
       - name: Configure
         run: |
@@ -378,7 +393,7 @@ jobs:
 
       - name: Build Binaries
         run: |
-          make -j$(nproc)
+          make -j$(sysctl -n hw.logicalcpu)
           mkdir -p ${BUILD_DIR} ${BUILD_DIR}_not_strip ${TEST_DIR}
           cp src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}/
           mv src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}_not_strip/
@@ -497,9 +512,9 @@ jobs:
 
       - name: Build Depends
         run: |
-          echo "building with $(nproc) threads"
+          echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(nproc) HOST=aarch64-apple-darwin
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=aarch64-apple-darwin
 
       - name: Configure
         run: |
@@ -508,7 +523,7 @@ jobs:
 
       - name: Build Binaries
         run: |
-          make -j$(nproc)
+          make -j$(sysctl -n hw.logicalcpu)
           mkdir -p ${BUILD_DIR} ${BUILD_DIR}_not_strip ${TEST_DIR}
           cp src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}/
           mv src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}_not_strip/
@@ -751,7 +766,17 @@ jobs:
       - name: Install Required Packages
         run: |
           sudo apt-get update -y
-          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool g++-aarch64-linux-gnu autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool g++-aarch64-linux-gnu autotools-dev automake pkg-config python3 bsdmainutils cmake ccache -y
+
+      - name: Set ccache directory
+        run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
+
+      - name: Restore ccache cache
+        id: ccache-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
 
       - name: Build Depends
         run: |
@@ -826,6 +851,12 @@ jobs:
           name: ${{ env.COIN_NAME }}-arm64-test-${{ needs.get-version.outputs.version }}
           path: ${{ env.TEST_DIR }}
 
+      - name: Save ccache cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
+
   test-arm-64:
     name: ARM 64-bit Tests
     needs: [get-version, build-arm-64]
@@ -878,10 +909,20 @@ jobs:
       - name: Install Required Packages
         run: |
           sudo apt-get update -y
-          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake -y
+          sudo apt-get install curl libcurl4-openssl-dev build-essential libtool autotools-dev automake pkg-config python3 bsdmainutils cmake ccache -y
           sudo apt-get install -y g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 nsis
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+
+      - name: Set ccache directory
+        run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
+
+      - name: Restore ccache cache
+        id: ccache-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
 
       - name: Build Depends
         run: |
@@ -964,6 +1005,12 @@ jobs:
         with:
           name: ${{ env.COIN_NAME }}-win-installation-${{ needs.get-version.outputs.version }}
           path: win64-installation
+
+      - name: Save ccache cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ github.job }}-ccache
 
   test-win64:
     name: Win64 Tests
