@@ -16,7 +16,7 @@ endef
 
 # gcc 12 generates array bound warnings.  Open issue for libxkbcommon: https://github.com/xkbcommon/libxkbcommon/issues/292
 define $(package)_config_cmds
-  $($(package)_autoconf) CXXFLAGS=-Wno-array-bounds
+  $($(package)_autoconf) CFLAGS=-Wno-array-bounds CXXFLAGS=-Wno-array-bounds
 endef
 
 define $(package)_build_cmds
