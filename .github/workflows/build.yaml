@@ -572,9 +572,9 @@ jobs:
           path: ${{ env.TEST_DIR }}
 
   test-ubuntu24:
-    name: Ubuntu 22 Tests
+    name: Ubuntu 24 Tests
     needs: [get-version, build-ubuntu24]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Download Artifacts
@@ -619,6 +619,7 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -U pip ds_store mac_alias setuptools
+          gcc -v
 
       - name: Cache depends sources
         uses: actions/cache@v4
@@ -805,6 +806,7 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -U pip ds_store mac_alias
+          gcc -v
 
       - name: Cache depends sources
         uses: actions/cache@v4
