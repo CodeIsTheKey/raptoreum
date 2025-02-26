@@ -655,7 +655,7 @@ jobs:
         run: |
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin22.6.0
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin
 
       - name: Save depends cache
         uses: actions/cache/save@v4
@@ -669,7 +669,7 @@ jobs:
       - name: Configure
         run: |
           ./autogen.sh
-          ./configure --prefix=`pwd`/depends/x86_64-apple-darwin22.6.0
+          ./configure --prefix=`pwd`/depends/x86_64-apple-darwin
 
       - name: Set ccache directory
         run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
@@ -806,7 +806,6 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -U pip ds_store mac_alias
-          gcc -v
 
       - name: Cache depends sources
         uses: actions/cache@v4
@@ -842,7 +841,7 @@ jobs:
         run: |
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin24.2.0
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin
 
       - name: Save depends cache
         uses: actions/cache/save@v4
@@ -856,7 +855,7 @@ jobs:
       - name: Configure
         run: |
           ./autogen.sh
-          ./configure --prefix=`pwd`/depends/arm64-apple-darwin24.2.0
+          ./configure --prefix=`pwd`/depends/arm64-apple-darwin
 
       - name: Set ccache directory
         run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
