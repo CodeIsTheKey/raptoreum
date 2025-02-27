@@ -655,7 +655,7 @@ jobs:
         run: |
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin CC=clang CXX=clang
 
       - name: Save depends cache
         uses: actions/cache/save@v4
@@ -841,7 +841,7 @@ jobs:
         run: |
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin  CC=clang CXX=clang
 
       - name: Save depends cache
         uses: actions/cache/save@v4
