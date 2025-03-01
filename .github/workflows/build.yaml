@@ -109,7 +109,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -290,7 +290,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -471,7 +471,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -679,7 +679,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -865,7 +865,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -1039,7 +1039,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
@@ -1215,7 +1215,7 @@ jobs:
           path: |
             depends/built
             depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore.outputs.cache-primary-key }}
+          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
       - name: Configure
         run: |
