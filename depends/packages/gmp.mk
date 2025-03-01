@@ -10,6 +10,8 @@ $(package)_config_opts += --disable-shared --enable-cxx --enable-fat
 $(package)_cflags_aarch64 += -march=armv8-a
 $(package)_cflags_armv7l += -march=armv7-a
 $(package)_cflags_x86_64 += -march=x86-64
+$(package)_cflags_darwin += -std=c17
+
 endef
 
 define $(package)_preprocess_cmds

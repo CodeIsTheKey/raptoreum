@@ -658,7 +658,6 @@ jobs:
           env
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
           make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin CC=clang CXX=clang
-          echo "config.log:"
 
       - name: Save config logs
         if: always()
@@ -670,7 +669,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.COIN_NAME }}-macos13-x86-config_logs.tar
-          path: .
+          path: ./config.tar
 
       - name: Save depends cache
         uses: actions/cache/save@v4
@@ -857,6 +856,18 @@ jobs:
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
           make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin  CC=clang CXX=clang
+
+      - name: Save config logs
+        if: always()
+        run: |
+          find . -iname config.log -exec tar cvf config.tar {} +
+
+      - name: Upload config logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.COIN_NAME }}-macos15-arm64-config_logs.tar
+          path: ./config.tar
 
       - name: Save depends cache
         uses: actions/cache/save@v4
