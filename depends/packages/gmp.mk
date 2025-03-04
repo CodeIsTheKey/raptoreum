@@ -18,8 +18,6 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_config_cmds
-  export C_STANDARD="c17"
-  export Cxx_STANDARD="c++17"
   $($(package)_autoconf)
 endef
 
