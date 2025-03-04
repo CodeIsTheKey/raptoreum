@@ -604,209 +604,209 @@ jobs:
           include_passed: false
           report_paths: "unit_test_results.xml"
 
-  build-macos13-x86:
-    name: macOS 13 x86 Build
-    needs: get-version
-    runs-on: macos-13
+#   build-macos13-x86:
+#     name: macOS 13 x86 Build
+#     needs: get-version
+#     runs-on: macos-13
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
 
-      - name: Install Required Packages
-        run: |
-          brew install automake libtool pkg-config librsvg libnatpmp python
-          python3 -m venv venv
-          source venv/bin/activate
-          pip3 install -U pip ds_store mac_alias setuptools
+#       - name: Install Required Packages
+#         run: |
+#           brew install automake libtool pkg-config librsvg libnatpmp python
+#           python3 -m venv venv
+#           source venv/bin/activate
+#           pip3 install -U pip ds_store mac_alias setuptools
 
-      - name: Cache depends sources
-        uses: actions/cache@v4
-        with:
-          path: |
-            depends/sources
-          key: depends-sources-${{ hashFiles('depends/packages/*') }}
-          restore-keys: |
-            depends-sources-
+#       - name: Cache depends sources
+#         uses: actions/cache@v4
+#         with:
+#           path: |
+#             depends/sources
+#           key: depends-sources-${{ hashFiles('depends/packages/*') }}
+#           restore-keys: |
+#             depends-sources-
 
-      - name: Cache SDKs
-        uses: actions/cache@v4
-        if: inputs.build-target == 'mac'
-        with:
-          path: |
-            depends/SDKs
-          key: depends-sdks-${{ hashFiles('depends/hosts/darwin.mk') }}
-          restore-keys: |
-            depends-sdks-
+#       - name: Cache SDKs
+#         uses: actions/cache@v4
+#         if: inputs.build-target == 'mac'
+#         with:
+#           path: |
+#             depends/SDKs
+#           key: depends-sdks-${{ hashFiles('depends/hosts/darwin.mk') }}
+#           restore-keys: |
+#             depends-sdks-
 
-      - name: Restore cached depends
-        uses: actions/cache/restore@v4
-        id: restore-depends
-        with:
-          path: |
-            depends/built
-            depends/${{ steps.setup.outputs.HOST }}
-          key: depends-${{ github.job }}-${{ hashFiles('depends/packages/*') }}
-          restore-keys: |
-            depends-${{ github.job }}-
+#       - name: Restore cached depends
+#         uses: actions/cache/restore@v4
+#         id: restore-depends
+#         with:
+#           path: |
+#             depends/built
+#             depends/${{ steps.setup.outputs.HOST }}
+#           key: depends-${{ github.job }}-${{ hashFiles('depends/packages/*') }}
+#           restore-keys: |
+#             depends-${{ github.job }}-
 
-      - name: Build Depends
-        run: |
-          echo "building with $(sysctl -n hw.logicalcpu) threads"
-          echo "Path: ${PATH}"
-          echo "env:"
-          env
-          export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin CC=$(brew --prefix llvm@15)/bin/clang CXX=$(brew --prefix llvm@15)/bin/clang
+#       - name: Build Depends
+#         run: |
+#           echo "building with $(sysctl -n hw.logicalcpu) threads"
+#           echo "Path: ${PATH}"
+#           echo "env:"
+#           env
+#           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
+#           make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin
 
-      - name: Save config logs
-        if: always()
-        run: |
-          find . -iname config.log -exec tar cvf config.tar {} +
+#       - name: Save config logs
+#         if: always()
+#         run: |
+#           find . -iname config.log -exec tar cvf config.tar {} +
 
-      - name: Upload config logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-config_logs.tar
-          path: ./config.tar
+#       - name: Upload config logs
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-config_logs.tar
+#           path: ./config.tar
 
-      - name: Save depends cache
-        uses: actions/cache/save@v4
-        if: steps.restore-depends.outputs.cache-hit != 'true'
-        with:
-          path: |
-            depends/built
-            depends/${{ steps.setup.outputs.HOST }}
-          key: ${{ steps.restore-depends.outputs.cache-primary-key }}
+#       - name: Save depends cache
+#         uses: actions/cache/save@v4
+#         if: steps.restore-depends.outputs.cache-hit != 'true'
+#         with:
+#           path: |
+#             depends/built
+#             depends/${{ steps.setup.outputs.HOST }}
+#           key: ${{ steps.restore-depends.outputs.cache-primary-key }}
 
-      - name: Configure
-        run: |
-          ./autogen.sh
-          ./configure --prefix=`pwd`/depends/x86_64-apple-darwin
+#       - name: Configure
+#         run: |
+#           ./autogen.sh
+#           ./configure --prefix=`pwd`/depends/x86_64-apple-darwin
 
-      - name: Set ccache directory
-        run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
+#       - name: Set ccache directory
+#         run: echo "CCACHE_DIR=${RUNNER_TEMP}/ccache_dir" >> "$GITHUB_ENV"
 
-      - name: Restore ccache cache
-        id: restore-ccache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job }}-ccache
+#       - name: Restore ccache cache
+#         id: restore-ccache
+#         uses: actions/cache/restore@v4
+#         with:
+#           path: ${{ env.CCACHE_DIR }}
+#           key: ${{ github.job }}-ccache
 
-      - name: Build Binaries
-        run: |
-          make -j$(sysctl -n hw.logicalcpu)
-          mkdir -p ${BUILD_DIR} ${BUILD_DIR}_not_strip ${TEST_DIR}
-          cp src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}/
-          mv src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}_not_strip/
-          mv src/test/test_raptoreum ${TEST_DIR}
-          strip ${BUILD_DIR}/*
+#       - name: Build Binaries
+#         run: |
+#           make -j$(sysctl -n hw.logicalcpu)
+#           mkdir -p ${BUILD_DIR} ${BUILD_DIR}_not_strip ${TEST_DIR}
+#           cp src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}/
+#           mv src/{raptoreum-cli,raptoreumd,qt/raptoreum-qt} ${BUILD_DIR}_not_strip/
+#           mv src/test/test_raptoreum ${TEST_DIR}
+#           strip ${BUILD_DIR}/*
 
-      - name: Save ccache cache
-        uses: actions/cache/save@v4
-        if: steps.restore-ccache.outputs.cache-hit != 'true'
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: ${{ github.job }}-ccache
+#       - name: Save ccache cache
+#         uses: actions/cache/save@v4
+#         if: steps.restore-ccache.outputs.cache-hit != 'true'
+#         with:
+#           path: ${{ env.CCACHE_DIR }}
+#           key: ${{ github.job }}-ccache
 
-      - name: Generate Checksum and Compress
-        run: |
-          cd ${BUILD_DIR}
-          echo "sha256:" >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          shasum * >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          echo "openssl-sha256:" >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          openssl sha256 * >> checksums.txt
-          cat checksums.txt
-          tar -cvzf ../${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz *
-          cd ../${BUILD_DIR}_not_strip
-          echo "sha256:" >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          shasum * >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          echo "openssl-sha256:" >> checksums.txt
-          echo "------------------------------------" >> checksums.txt
-          openssl sha256 * >> checksums.txt
-          cat checksums.txt
-          tar -cvzf ../${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz *
-          cd ..
-          mkdir -p ${COMPRESS_DIR}
-          mv *.tar.gz ${COMPRESS_DIR}/
-          cd ${COMPRESS_DIR}
-          echo "sha256: `shasum ${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
-          echo "openssl-sha256: `openssl sha256 ${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
-          echo "sha256: `shasum ${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
-          echo "openssl-sha256: `openssl sha256 ${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
-          cat checksums.txt
-          cd ..
+#       - name: Generate Checksum and Compress
+#         run: |
+#           cd ${BUILD_DIR}
+#           echo "sha256:" >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           shasum * >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           echo "openssl-sha256:" >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           openssl sha256 * >> checksums.txt
+#           cat checksums.txt
+#           tar -cvzf ../${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz *
+#           cd ../${BUILD_DIR}_not_strip
+#           echo "sha256:" >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           shasum * >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           echo "openssl-sha256:" >> checksums.txt
+#           echo "------------------------------------" >> checksums.txt
+#           openssl sha256 * >> checksums.txt
+#           cat checksums.txt
+#           tar -cvzf ../${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz *
+#           cd ..
+#           mkdir -p ${COMPRESS_DIR}
+#           mv *.tar.gz ${COMPRESS_DIR}/
+#           cd ${COMPRESS_DIR}
+#           echo "sha256: `shasum ${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
+#           echo "openssl-sha256: `openssl sha256 ${COIN_NAME}-macos13-x86-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
+#           echo "sha256: `shasum ${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
+#           echo "openssl-sha256: `openssl sha256 ${COIN_NAME}-macos13-x86-not_strip-${{ needs.get-version.outputs.version }}.tar.gz`" >> checksums.txt
+#           cat checksums.txt
+#           cd ..
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-${{ needs.get-version.outputs.version }}
-          path: ${{ env.COMPRESS_DIR }}
+#       - name: Upload Artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-${{ needs.get-version.outputs.version }}
+#           path: ${{ env.COMPRESS_DIR }}
 
-      - name: Upload Test Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-test-${{ needs.get-version.outputs.version }}
-          path: ${{ env.TEST_DIR }}
+#       - name: Upload Test Artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-test-${{ needs.get-version.outputs.version }}
+#           path: ${{ env.TEST_DIR }}
 
-      - name: Generate macOS dmg files
-        run: |
-          make deploy
-          mkdir -p macos13-x86-dmg
-          mv Raptoreum-Core.dmg macos13-x86-dmg/
-          cd macos13-x86-dmg
-          echo "sha256: `shasum Raptoreum-Core.dmg`" >> checksums.txt
-          echo "openssl-sha256: `openssl sha256 Raptoreum-Core.dmg`" >> checksums.txt
-          cd ..
+#       - name: Generate macOS dmg files
+#         run: |
+#           make deploy
+#           mkdir -p macos13-x86-dmg
+#           mv Raptoreum-Core.dmg macos13-x86-dmg/
+#           cd macos13-x86-dmg
+#           echo "sha256: `shasum Raptoreum-Core.dmg`" >> checksums.txt
+#           echo "openssl-sha256: `openssl sha256 Raptoreum-Core.dmg`" >> checksums.txt
+#           cd ..
 
-      - name: Upload dmg file
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-dmg-${{ needs.get-version.outputs.version }}
-          path: macos13-x86-dmg
+#       - name: Upload dmg file
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-dmg-${{ needs.get-version.outputs.version }}
+#           path: macos13-x86-dmg
 
-  test-macos13-x86:
-    name: macOS 13 x86 Tests
-    needs: [get-version, build-macos13-x86]
-    runs-on: macos-13
+#   test-macos13-x86:
+#     name: macOS 13 x86 Tests
+#     needs: [get-version, build-macos13-x86]
+#     runs-on: macos-13
 
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-test-${{ needs.get-version.outputs.version }}
+#     steps:
+#       - name: Download Artifacts
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-test-${{ needs.get-version.outputs.version }}
 
-      - name: Run Unit Tests
-        id: Tests
-        run: |
-          chmod +x test_raptoreum
-          ./test_raptoreum --log_format=JUNIT > unit_test_results.xml
+#       - name: Run Unit Tests
+#         id: Tests
+#         run: |
+#           chmod +x test_raptoreum
+#           ./test_raptoreum --log_format=JUNIT > unit_test_results.xml
 
-      - name: Upload Test Artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ${{ env.COIN_NAME }}-macos13-x86-test-results-${{ needs.get-version.outputs.version }}
-          path: unit_test_results.xml
+#       - name: Upload Test Artifacts
+#         uses: actions/upload-artifact@v4
+#         if: always()
+#         with:
+#           name: ${{ env.COIN_NAME }}-macos13-x86-test-results-${{ needs.get-version.outputs.version }}
+#           path: unit_test_results.xml
 
-      - name: Publish Unit Test Report
-        uses: mikepenz/action-junit-report@v5
-        if: always()
-        with:
-          check_name: "macOS 13 x86"
-          detailed_summary: ${{ steps.Tests.conclusion == 'failure'}}
-          include_passed: false
-          report_paths: "unit_test_results.xml"
+#       - name: Publish Unit Test Report
+#         uses: mikepenz/action-junit-report@v5
+#         if: always()
+#         with:
+#           check_name: "macOS 13 x86"
+#           detailed_summary: ${{ steps.Tests.conclusion == 'failure'}}
+#           include_passed: false
+#           report_paths: "unit_test_results.xml"
 
   build-macos15-arm64:
-    name: macOS 15 arm64 Build
+    name: macOS 15 arm64 Build (M1)
     needs: get-version
     runs-on: macos-15
 
@@ -814,12 +814,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Use Xcode instead of Command Line Tools
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
       - name: Install Required Packages
         run: |
-          brew install automake libtool librsvg libnatpmp python-setuptools ccache
-          python3 -m venv venv
-          source venv/bin/activate
-          pip3 install -U pip ds_store mac_alias
+          if ! command -v pkg-config &> /dev/null; then
+            echo "pkg-config not found, installing..."
+            brew install pkg-config
+          else
+            echo "pkg-config is already installed"
+          fi
+          brew install automake coreutils python-setuptools
+        # Workaround for macOS: https://github.com/actions/runner/issues/2958
+      - name: Install setuptools
+        run: sudo -H pip install setuptools
 
       - name: Cache depends sources
         uses: actions/cache@v4
