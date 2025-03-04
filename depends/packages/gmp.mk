@@ -7,10 +7,6 @@ $(package)_patches=include_ldflags_in_configure.patch
 
 define $(package)_set_vars
 $(package)_config_opts += --disable-shared --enable-cxx --enable-fat
-$(package)_cflags_aarch64 += -march=armv8-a
-$(package)_cflags_armv7l += -march=armv7-a
-$(package)_cflags_x86_64 += -march=x86-64
-
 endef
 
 define $(package)_preprocess_cmds
@@ -18,7 +14,7 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_config_cmds
-  $($(package)_autoconf)
+  bash -x $($(package)_autoconf)
 endef
 
 define $(package)_build_cmds
