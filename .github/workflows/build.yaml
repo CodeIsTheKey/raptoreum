@@ -657,7 +657,7 @@ jobs:
           echo "env:"
           env
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin CC=gcc CXX=g++
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=x86_64-apple-darwin CC=$(brew --prefix llvm@15)/bin/clang CXX=$(brew --prefix llvm@15)/bin/clang
 
       - name: Save config logs
         if: always()
