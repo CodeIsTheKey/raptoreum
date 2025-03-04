@@ -808,7 +808,7 @@ jobs:
   build-macos15-arm64:
     name: macOS 15 arm64 Build (M1)
     needs: get-version
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
