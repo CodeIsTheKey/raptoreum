@@ -863,7 +863,7 @@ jobs:
         run: |
           echo "building with $(sysctl -n hw.logicalcpu) threads"
           export FALLBACK_DOWNLOAD_PATH=https://pool.nowput.org/depends/
-          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin  CC=clang CXX=clang
+          make -C depends -j$(sysctl -n hw.logicalcpu) HOST=arm64-apple-darwin CLANG_C_LANGUAGE_STANDARD=gnu17 CLANG_CXX_LANGUAGE_STANDARD=gnu++17
 
       - name: Save config logs
         if: always()
